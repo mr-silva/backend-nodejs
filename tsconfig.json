@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ESNEXT",
+    "target": "es5",
     "outDir": "dist",
     "module": "commonjs",
     "experimentalDecorators": true,
