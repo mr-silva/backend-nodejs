@@ -1,21 +1,21 @@
-import * as express from 'express'
-import * as bodyParser from 'body-parser'
-import * as cors from 'cors'
-import * as dotenv from 'dotenv'
+import * as express from 'express';
+import * as bodyParser from 'body-parser';
+import * as cors from 'cors';
+import * as dotenv from 'dotenv';
 
-dotenv.config()
+import routes from './routes';
 
-const application = express()
+dotenv.config();
 
-application.use(bodyParser.text())
-application.use(express.json())
-application.use(express.urlencoded({ extended: false }))
-application.use(cors())
+const application = express();
 
-application.get('/', (req, res) => {
-    res.send('Hello World!')
-})
+application.use(bodyParser.text());
+application.use(express.json());
+application.use(express.urlencoded({ extended: false }));
+application.use(cors());
 
-application.set('port', process.env.APP_PORT || 5000)
+application.use(routes);
 
-export { application }
+application.set('port', process.env.APP_PORT || 5000);
+
+export { application };
