@@ -14,7 +14,7 @@ class CreateAccountService {
     const checkAccountTypes = ['savings', 'current'];
 
     if (!checkAccountTypes.includes(accountType)) {
-      throw Error('Account type must be either savings or current.');
+      throw new Error('Account type must be either savings or current.');
     }
 
     if (balance < 0) {
