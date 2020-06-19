@@ -18,7 +18,7 @@ class CreateAccountService {
     }
 
     if (balance < 0) {
-      throw new Error('Account balance must be at least 0');
+      throw new Error('Account balance must be at least 0.');
     }
 
     const account = this.accountsRepository.create({
