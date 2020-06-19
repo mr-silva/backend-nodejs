@@ -1,5 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 
+import AppError from '../errors/AppError';
+
 import Account from '../models/Account';
 import AccountsRepository from '../repositories/AccountsRepository';
 
@@ -16,11 +18,11 @@ class CreateAccountService {
     const checkAccountTypes = ['savings', 'current'];
 
     if (!checkAccountTypes.includes(accountType)) {
-      throw new Error('Account type must be either savings or current.');
+      throw new AppError('Account type must be either savings or current.');
     }
 
     if (balance < 0) {
-      throw new Error('Account balance must be at least 0.');
+      throw new AppError('Account balance must be at least 0.');
     }
 
     const account = this.accountsRepository.create({

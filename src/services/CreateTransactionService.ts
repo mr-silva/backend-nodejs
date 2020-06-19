@@ -1,5 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 
+import AppError from '../errors/AppError';
+
 import Transaction from '../models/Transaction';
 import TransactionsRepository from '../repositories/TransactionsRepository';
 import AccountsRepository from '../repositories/AccountsRepository';
@@ -20,21 +22,21 @@ class CreateTransactionService {
     const accountData = await this.accountsRepository.findById(accountId);
 
     if (!accountData) {
-      throw new Error('Invalid account.');
+      throw new AppError('Invalid account.');
     }
 
     if (!checkOperationTypes.includes(operation)) {
-      throw new Error('Operation type must be either withdraw or deposit.');
+      throw new AppError('Operation type must be either withdraw or deposit.');
     }
 
     if (value <= 0) {
-      throw new Error('Invalid value.');
+      throw new AppError('Invalid value.');
     }
 
     const { balance } = accountData;
 
     if (operation === 'withdraw' && (balance < value + 0.30 || value > 600)) {
-      throw new Error('Insuficient funds or value exceeds withdraw limit.');
+      throw new AppError('Insuficient funds or value exceeds withdraw limit.');
     }
 
     const transaction = await this.transactionsRepository.create({

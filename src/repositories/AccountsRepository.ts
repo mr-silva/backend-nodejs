@@ -18,10 +18,6 @@ class AccountsRepository {
     return account;
   }
 
-  public async findAll(): Promise<Account[]> {
-    return this.accounts;
-  }
-
   public async updateBalance({ accountId, value }: IUpdateAccountBalanceDTO): Promise<Account> {
     const key = this.accounts.findIndex(
       account => account.id === accountId

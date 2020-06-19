@@ -1,40 +1,22 @@
 import { Router } from 'express';
-import { container } from 'tsyringe';
+import { celebrate, Segments, Joi } from 'celebrate';
 
-import CreateAccountService from '../services/CreateAccountService';
-import ListAccountTransactionsService from '../services/ListAccountTransactionsService';
+import AccountController from '../controllers/AccountController';
 
 const accountRouter = Router();
+const accountController = new AccountController();
 
-accountRouter.post('/', async (req, res) => {
-  try {
-    const { accountType, balance } = req.body;
+accountRouter.post(
+  '/', 
+  celebrate({
+    [Segments.BODY]: {
+      accountType: Joi.string().required(),
+      balance: Joi.number().required(),
+    }
+  }),
+  accountController.create,
+);
 
-    const createAccount = container.resolve(CreateAccountService);
-
-    const account = await createAccount.execute({
-      accountType,
-      balance,
-    });
-
-    return res.json(account);
-  } catch(err) {
-    return res.status(400).json({ error: err.message });
-  }
-});
-
-accountRouter.get('/transactions/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const listAccount = container.resolve(ListAccountTransactionsService);
-
-    const account = await listAccount.execute(id);
-
-    return res.json(account);
-  } catch(err) {
-    return res.status(400).json({ error: err.message });
-  }
-});
+accountRouter.get('/transactions/:id', accountController.list);
 
 export default accountRouter;

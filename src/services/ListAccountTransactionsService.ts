@@ -1,5 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 
+import AppError from '../errors/AppError';
+
 import Account from '../models/Account';
 import TransactionsRepository from '../repositories/TransactionsRepository';
 import AccountsRepository from '../repositories/AccountsRepository';
@@ -17,7 +19,7 @@ class ListAccountTransactionsService {
     const account = await this.accountsRepository.findById(accountId);
 
     if (!account) {
-      throw new Error('Invalid account.');
+      throw new AppError('Invalid account.');
     }
 
     const accountTransactions = await this.transactionsRepository.findByAccountId(accountId);

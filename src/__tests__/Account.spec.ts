@@ -56,22 +56,6 @@ describe('Account', () => {
     );
   });
 
-  it('should be able to list all accounts', async () => {
-    const account1 = await createAccount.execute({
-      accountType: 'savings',
-      balance: 500,
-    });
-
-    const account2 = await createAccount.execute({
-      accountType: 'current',
-      balance: 1500,
-    });
-
-    const accounts = await accountsRepository.findAll();
-
-    expect(accounts).toEqual([account1, account2]);
-  });
-
   it('should be able to list one account', async () => {
     const account = await createAccount.execute({
       accountType: 'savings',
@@ -100,22 +84,4 @@ describe('Account', () => {
       balance: 800,
     });    
   });
-
-  it('should be able to update account balance with negative value', async () => {
-    const account = await createAccount.execute({
-      accountType: 'savings',
-      balance: 500,
-    });
-
-    await expect(
-      accountsRepository.updateBalance({
-        accountId: account.id,
-        value: -300
-      })
-    ).resolves.toMatchObject({
-      id: account.id,
-      accountType: 'savings',
-      balance: 200,
-    });    
-  });  
 });

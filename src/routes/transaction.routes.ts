@@ -1,26 +1,21 @@
 import { Router } from 'express';
-import { container } from 'tsyringe';
+import { celebrate, Segments, Joi } from 'celebrate';
 
-import CreateTransactionService from '../services/CreateTransactionService';
+import TransactionController from '../controllers/TransactionController';
 
 const transactionRouter = Router();
+const transactionController = new TransactionController();
 
-transactionRouter.post('/', async (req, res) => {
-  try {
-    const { accountId, operation, value } = req.body;
-
-    const createTransaction = container.resolve(CreateTransactionService);
-
-    const transaction = await createTransaction.execute({
-      accountId,
-      operation,
-      value,
-    });
-
-    return res.json(transaction);
-  } catch(err) {
-    return res.status(400).json({ error: err.message });
-  }
-});
+transactionRouter.post(
+  '/',
+  celebrate({
+    [Segments.BODY]: {
+      accountId: Joi.string().required(),
+      operation: Joi.string().required(),
+      value: Joi.number().required(),
+    }
+  }),
+  transactionController.create,
+);
 
 export default transactionRouter;

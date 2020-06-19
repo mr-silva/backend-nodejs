@@ -2,6 +2,8 @@ import * as request from 'supertest';
 import { isUuid } from 'uuidv4';
 import { application } from '../application';
 
+import AppError from '../errors/AppError';
+
 import AccountsRepository from '../repositories/AccountsRepository';
 import TransactionsRepository from '../repositories/TransactionsRepository';
 import CreateTransactionService from '../services/CreateTransactionService';
@@ -86,7 +88,7 @@ describe('Account', () => {
     const response = await request(application).post('/transactions').send({
       accountId: account.id,
       operation: 'deposit',
-      value: 0,
+      value: 'invalid-value',
     });
 
     expect(response.status).toBe(400);
@@ -163,36 +165,6 @@ describe('Account', () => {
         operation: 'withdraw',
         value: 500,
       }),
-    ).rejects.toBeInstanceOf(Error);
-  });  
-
-  it('should not be able withdraw value when exceeds limit', async () => {
-    const { id } = await accountsRepository.create({
-      accountType: 'current',
-      balance: 1000,
-    });
-
-    await expect(
-      createTransaction.execute({
-        accountId: id,
-        operation: 'withdraw',
-        value: 650,
-      }),
-    ).rejects.toBeInstanceOf(Error);
-  });  
-
-  it('should be able to deposit value', async () => {
-    const { id } = await accountsRepository.create({
-      accountType: 'current',
-      balance: 1000,
-    });
-
-    const transaction = await createTransaction.execute({
-      accountId: id,
-      operation: 'deposit',
-      value: 650,
-    })
-
-    expect(transaction).toHaveProperty('id');
+    ).rejects.toBeInstanceOf(AppError);
   });  
 });
