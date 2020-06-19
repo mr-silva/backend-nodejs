@@ -25,12 +25,12 @@ class TransactionsRepository {
     return transaction;
   }
   
-  public async findById(id: string): Promise<Transaction | undefined> {
-    const findTransaction = this.transactions.find(
-      transaction => transaction.id === id
+  public async findByAccountId(accountId: string): Promise<Transaction[] | undefined> {
+    const findTransactions = this.transactions.filter(
+      transaction => transaction.accountId === accountId
     );
 
-    return findTransaction;
+    return findTransactions;
   }
 }
 

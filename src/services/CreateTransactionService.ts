@@ -33,7 +33,7 @@ class CreateTransactionService {
 
     const { balance } = accountData;
 
-    if (operation === 'withdraw' && balance < value + 0.30 || value > 600) {
+    if (operation === 'withdraw' && (balance < value + 0.30 || value > 600)) {
       throw new Error('Insuficient funds or value exceeds withdraw limit.');
     }
 

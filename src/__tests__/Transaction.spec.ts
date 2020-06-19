@@ -180,4 +180,19 @@ describe('Account', () => {
       }),
     ).rejects.toBeInstanceOf(Error);
   });  
+
+  it('should be able to deposit value', async () => {
+    const { id } = await accountsRepository.create({
+      accountType: 'current',
+      balance: 1000,
+    });
+
+    const transaction = await createTransaction.execute({
+      accountId: id,
+      operation: 'deposit',
+      value: 650,
+    })
+
+    expect(transaction).toHaveProperty('id');
+  });  
 });
