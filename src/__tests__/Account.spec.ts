@@ -2,7 +2,18 @@ import * as request from 'supertest';
 import { isUuid } from 'uuidv4';
 import { application } from '../application';
 
+import AccountsRepository from '../repositories/AccountsRepository';
+import CreateAccountService from '../services/CreateAccountService';
+
+let accountsRepository: AccountsRepository;
+let createAccount: CreateAccountService;
+
 describe('Account', () => {
+  beforeEach(() => {
+    accountsRepository = new AccountsRepository();
+    createAccount = new CreateAccountService(accountsRepository);
+  });
+  
   it('should be able to create a new account', async () => {
     const response = await request(application).post('/accounts').send({
       accountType: 'savings',
@@ -15,35 +26,6 @@ describe('Account', () => {
       accountType: 'savings',
       balance: 1000,
     });
-  });
-
-  it('should be able to list all accounts', async () => {
-    await request(application).post('/accounts').send({
-      accountType: 'savings',
-      balance: 1000,
-    });
-
-    await request(application).post('/accounts').send({
-      accountType: 'current',
-      balance: 2000,
-    });
-
-    const response = await request(application).get('/accounts');
-
-    expect(response.body).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          id: expect.any(String),
-          accountType: 'savings',
-          balance: 1000,
-        }),
-        expect.objectContaining({
-          id: expect.any(String),
-          accountType: 'current',
-          balance: 2000,
-        }),
-      ]),
-    );
   });
 
   it('should not be able to create new account with invalid account type', async () => {
@@ -73,4 +55,67 @@ describe('Account', () => {
       }),
     );
   });
+
+  it('should be able to list all accounts', async () => {
+    const account1 = await createAccount.execute({
+      accountType: 'savings',
+      balance: 500,
+    });
+
+    const account2 = await createAccount.execute({
+      accountType: 'current',
+      balance: 1500,
+    });
+
+    const accounts = await accountsRepository.findAll();
+
+    expect(accounts).toEqual([account1, account2]);
+  });
+
+  it('should be able to list one account', async () => {
+    const account = await createAccount.execute({
+      accountType: 'savings',
+      balance: 500,
+    });
+
+    await expect(
+      accountsRepository.findById(account.id)
+    ).resolves.toHaveProperty('accountType');
+  });
+
+  it('should be able to update account balance', async () => {
+    const account = await createAccount.execute({
+      accountType: 'savings',
+      balance: 500,
+    });
+
+    await expect(
+      accountsRepository.updateBalance({
+        accountId: account.id,
+        value: 300
+      })
+    ).resolves.toMatchObject({
+      id: account.id,
+      accountType: 'savings',
+      balance: 800,
+    });    
+  });
+
+  it('should be able to update account balance with negative value', async () => {
+    const account = await createAccount.execute({
+      accountType: 'savings',
+      balance: 500,
+    });
+
+    await expect(
+      accountsRepository.updateBalance({
+        accountId: account.id,
+        value: -300
+      })
+    ).resolves.toMatchObject({
+      id: account.id,
+      accountType: 'savings',
+      balance: 200,
+    });    
+  });  
 });

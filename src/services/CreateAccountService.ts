@@ -1,16 +1,18 @@
+import { inject, injectable } from 'tsyringe';
+
 import Account from '../models/Account';
 import AccountsRepository from '../repositories/AccountsRepository';
 
 import ICreateAccountDTO from '../dtos/accounts/ICreateAccountDTO';
 
+@injectable()
 class CreateAccountService {
-  private accountsRepository: AccountsRepository;
+  constructor(
+    @inject('AccountsRepository')
+    private accountsRepository: AccountsRepository,
+  ) {}
 
-  constructor(accountsRepository: AccountsRepository) {
-    this.accountsRepository = accountsRepository;
-  }
-
-  public execute({ accountType, balance }: ICreateAccountDTO): Account {
+  public async execute({ accountType, balance }: ICreateAccountDTO): Promise<Account> {
     const checkAccountTypes = ['savings', 'current'];
 
     if (!checkAccountTypes.includes(accountType)) {
