@@ -30,7 +30,7 @@ class AccountsRepository {
     this.accounts[key].balance -= value;
   }
 
-  public findById(accountId: string): Account {
+  public findById(accountId: string): Account | undefined {
     const findAccount = this.accounts.find(
       account => account.id === accountId
     );
